@@ -116,7 +116,7 @@ export default class CustomerBusiness {
             const newCustomerRegister = await this.customerDatabase.postNewCustomer(newCustomerDTO)
 
             const newUserInfo: resultNewCustomerData = {
-                [RESULT_NEW_CUSTOMER.ID]: newCustomerRegister,
+                [RESULT_NEW_CUSTOMER.ID]: Number(newCustomerRegister),
                 [RESULT_NEW_CUSTOMER.NAME]: newCustomerDTO[NEW_CUSTOMER_DTO.NAME]
             }
 
