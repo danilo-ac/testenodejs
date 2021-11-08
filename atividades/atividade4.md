@@ -14,7 +14,7 @@ E retornar qual foi o ID inserido.
 }
 ```
 
-- [ ] - Caso não enviar o o CPF completo, com mascara, não deve salvar.
+- [x] - Caso não enviar o o CPF completo, com mascara, não deve salvar.
 
 ```
 {
@@ -29,7 +29,7 @@ E retornar qual foi o ID inserido.
 (Evidências no evidencia.doc)
 
 - [x] - Criação do Cliente : nome Renata / Cpf 123.123.123-12 /  Telefone (62) 98112-1233
-- [ ] - Exception enviando um cpf com 111.123.123
+- [x] - Exception enviando um cpf com 111.123.123
 
 ---
 Fim atividade 4

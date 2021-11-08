@@ -58,12 +58,11 @@ export default class SQLCustomerDatabase extends SQLBaseDatabase implements Cust
         newCustomerDTO: newCustomerDTO
     ): Promise<any> {
 
-        try {        
+        try {
 
             const query = await this.getConnection()
-            .from(SQL_TABLES.CUSTOMER)
-            .insert(newCustomerDTO)
-            .returning("id")
+                .from(SQL_TABLES.CUSTOMER)
+                .insert(newCustomerDTO)
 
             return query[0]
 
