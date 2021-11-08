@@ -79,6 +79,13 @@ export default class CustomerBusiness {
     }
 
 
+    private isValidCPF(input: string) {
+
+        const regex = /[0-9]{3}\.[0-9]{3}\.[0-9]{3}\-[0-9]{2}/;
+
+        return regex.test(input);
+
+    }
 
     public async postNewCustomer(newCustomerDTO: newCustomerDTO): Promise<requestResult> {
 
@@ -93,14 +100,23 @@ export default class CustomerBusiness {
                     .mountError()
             }
 
+            if (!this.isValidCPF(newCustomerDTO[NEW_CUSTOMER_DTO.CPF])) {
+                throw new CustomError(
+                    406,
+                    'CPF não enviado corretamente',
+                    1,
+                    'CPF não enviado corretamente')
+                    .mountError()
+            }
+
             //to do: advanced DTO validation / http status 406
 
-            newCustomerDTO[NEW_CUSTOMER_DTO.CREATE_AT] = moment(new Date()).format("YYYY-MM-DD HH:MM:SS.000000")
+            newCustomerDTO[NEW_CUSTOMER_DTO.CREATE_AT] = moment(new Date()).format("YYYY-MM-DD HH:mm:ss.SSSSSS")
 
             const newCustomerRegister = await this.customerDatabase.postNewCustomer(newCustomerDTO)
 
             const newUserInfo: resultNewCustomerData = {
-                [RESULT_NEW_CUSTOMER.ID]: newCustomerRegister,
+                [RESULT_NEW_CUSTOMER.ID]: Number(newCustomerRegister),
                 [RESULT_NEW_CUSTOMER.NAME]: newCustomerDTO[NEW_CUSTOMER_DTO.NAME]
             }
 
