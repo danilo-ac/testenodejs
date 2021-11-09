@@ -1,6 +1,6 @@
 # Atividade 5
 
-- [ ] Fazer a rota PUT /cliente/{cliente}  para atualizar o nome da Renata para "Juliana"
+- [x] Fazer a rota PUT /cliente/{cliente}  para atualizar o nome da Renata para "Juliana"
 
 
 ```
@@ -14,7 +14,7 @@
 }
 ```
 
-- [ ] - Caso não enviar o o CPF completo, com mascara, não deve salvar.
+- [x] - Caso não enviar o o CPF completo, com mascara, não deve salvar.
 
 ```
 {
@@ -26,7 +26,7 @@
 }
 ```
 
-- [ ] - Caso não encontrar o cliente.
+- [x] - Caso não encontrar o cliente.
 
 ```
 {
@@ -40,9 +40,9 @@
 
 (Evidências no evidencia.doc)
 
-- [ ] - Atualização do Cliente : nome Juliana 
-- [ ] - Exception enviando um cpf com 111.123.123
-- [ ] - Exception do cliente não encontrado id 15
+- [x] - Atualização do Cliente : nome Juliana 
+- [x] - Exception enviando um cpf com 111.123.123
+- [x] - Exception do cliente não encontrado id 15
 
 ---
 Fim atividade 5

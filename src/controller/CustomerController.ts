@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import CustomerBusiness from "../business/CustomerBusiness";
 import SQLCustomerDatabase from "../data/SQLCustomerDatabase";
 import CustomError from "../error/CustomError";
-import { newCustomerDTO, NEW_CUSTOMER_DTO } from "../model/CustomerModel";
+import { CUSTOMER_URI_PARAMS, editCustomerDTO, EDIT_CUSTOMER_DTO, newCustomerDTO, NEW_CUSTOMER_DTO, RESULT_EDIT_CUSTOMER } from "../model/CustomerModel";
 
 
 export class CustomerController {
@@ -21,7 +21,7 @@ export class CustomerController {
         try {
 
             const salesByCustomerId = await customerBusiness
-                .getSalesByCustomerId(Number(req.params.customerId))
+                .getSalesByCustomerId(Number(req.params[CUSTOMER_URI_PARAMS.ID]))
 
             return res
                 .status(200)
@@ -43,7 +43,7 @@ export class CustomerController {
     ): Promise<any> {
 
         try {
-    
+
             if (!Object.keys(req.body).length) {
                 throw new CustomError(
                     400,
@@ -58,7 +58,7 @@ export class CustomerController {
                 [NEW_CUSTOMER_DTO.PHONE]: req.body[NEW_CUSTOMER_DTO.PHONE],
                 [NEW_CUSTOMER_DTO.CPF]: req.body[NEW_CUSTOMER_DTO.CPF]
             }
-            
+
             const newCustomerInfo = await customerBusiness
                 .postNewCustomer(newCustomerDTO)
 
@@ -74,6 +74,54 @@ export class CustomerController {
                 .end()
         }
     }
+
+
+    public async editCustomer(
+        req: Request, res: Response
+    ): Promise<any> {
+
+        try {
+
+            if (!req.params[CUSTOMER_URI_PARAMS.ID] ||
+                !req.params[CUSTOMER_URI_PARAMS.ID].trim() ||
+                req.params[CUSTOMER_URI_PARAMS.ID] === `:${[CUSTOMER_URI_PARAMS.ID]}`) {
+                throw new CustomError(
+                    400,
+                    "Informações ausentes",
+                    1,
+                    `Necessário informar '${RESULT_EDIT_CUSTOMER.ID}'`)
+                    .mountError()
+            }
+
+            if (!Object.keys(req.body).length) {
+                throw new CustomError(
+                    400,
+                    "Informações ausentes",
+                    1,
+                    `Necessário informar qual campo de edição`)
+                    .mountError()
+            }
+
+            const editCustomerDTO: editCustomerDTO = req.body
+            editCustomerDTO[EDIT_CUSTOMER_DTO.ID] = Number(req.params[CUSTOMER_URI_PARAMS.ID])
+
+            const editCustomerInfo = await customerBusiness
+                .editCustomer(editCustomerDTO)
+
+            return res
+                .status(201)
+                .send(editCustomerInfo)
+                .end()
+
+        } catch (error: any) {
+            res
+                .status(error.code || 500)
+                .send(error.message || "Internal Error")
+                .end()
+        }
+    }
+
+
 
 }
 

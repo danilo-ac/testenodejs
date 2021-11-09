@@ -1,6 +1,6 @@
 import moment from 'moment';
 import CustomError from '../error/CustomError';
-import { newCustomerDTO, NEW_CUSTOMER_DTO, requestResult, resultNewCustomerData, RESULT_DATA_ITEM_KEYS, RESULT_DATA_KEYS, RESULT_NEW_CUSTOMER, salesData, salesItens } from '../model/CustomerModel';
+import { editCustomerDTO, EDIT_CUSTOMER_DTO, newCustomerDTO, NEW_CUSTOMER_DTO, requestResult, resultEditCustomerData, resultNewCustomerData, RESULT_DATA_ITEM_KEYS, RESULT_DATA_KEYS, RESULT_NEW_CUSTOMER, salesData, salesItens } from '../model/CustomerModel';
 import CustomerRepository from './CustomerRepository';
 
 export default class CustomerBusiness {
@@ -10,7 +10,9 @@ export default class CustomerBusiness {
     ) { }
 
 
-    public async getSalesByCustomerId(customerId: number): Promise<requestResult> {
+    public async getSalesByCustomerId(
+        customerId: number
+    ): Promise<requestResult> {
 
         //to do: input parameter validation 
 
@@ -87,7 +89,9 @@ export default class CustomerBusiness {
 
     }
 
-    public async postNewCustomer(newCustomerDTO: newCustomerDTO): Promise<requestResult> {
+    public async postNewCustomer(
+        newCustomerDTO: newCustomerDTO
+    ): Promise<requestResult> {
 
         try {
 
@@ -115,12 +119,12 @@ export default class CustomerBusiness {
 
             const newCustomerRegister = await this.customerDatabase.postNewCustomer(newCustomerDTO)
 
-            const newUserInfo: resultNewCustomerData = {
+            const newCustomerInfo: resultNewCustomerData = {
                 [RESULT_NEW_CUSTOMER.ID]: Number(newCustomerRegister),
                 [RESULT_NEW_CUSTOMER.NAME]: newCustomerDTO[NEW_CUSTOMER_DTO.NAME]
             }
 
-            const result: requestResult = requestResult.toSuccessfullyNewCustomerRes(newUserInfo)
+            const result: requestResult = requestResult.toSuccessfullyNewCustomerRes(newCustomerInfo)
 
             return result
 
@@ -130,6 +134,106 @@ export default class CustomerBusiness {
 
             throw error
         }
+    }
+
+    protected isValidBodyKeys(body: any, keysModel: any[]) {
+        return Object.keys(body).every((item: any) => {
+            return keysModel.includes(item)
+        })
+    }
+
+    public async editCustomer(
+        editCustomerDTO: editCustomerDTO
+    ): Promise<requestResult> {
+
+        try {
+
+            if (!editCustomerDTO[EDIT_CUSTOMER_DTO.ID] ||
+                !editCustomerDTO[EDIT_CUSTOMER_DTO.ID].toString().trim() ||
+                isNaN(editCustomerDTO[EDIT_CUSTOMER_DTO.ID])
+            ) {
+                throw new CustomError(
+                    400,
+                    "Informações ausentes",
+                    1,
+                    `Necessário informar '${EDIT_CUSTOMER_DTO.ID}'`)
+                    .mountError()
+            }
+
+            if (!Object.keys(editCustomerDTO).length) {
+                throw new CustomError(
+                    400,
+                    "Informações ausentes",
+                    1,
+                    `Necessário informar qual campo de edição`)
+                    .mountError()
+            }
+
+            if (!this.isValidBodyKeys(editCustomerDTO, Object.values(EDIT_CUSTOMER_DTO))) {
+                throw new CustomError(
+                    406,
+                    'Campo inválido',
+                    1,
+                    'Algum campo requisitado para edição é inválido ou não autorizado'
+                ).mountError()
+            }
+
+            if (!this.isValidCPF(editCustomerDTO[EDIT_CUSTOMER_DTO.CPF])) {
+                throw new CustomError(
+                    406,
+                    'CPF não enviado corretamente',
+                    1,
+                    'CPF não enviado corretamente')
+                    .mountError()
+            }
+
+            const isRegisteredCustomer = await this.customerDatabase
+                .isRegisteredCustomerId(editCustomerDTO[EDIT_CUSTOMER_DTO.ID], "getData")
+
+            if (!isRegisteredCustomer) {
+                throw new CustomError(
+                    401,
+                    'Cliente não encontrado',
+                    1,
+                    `Cliente não encontrado id: ${editCustomerDTO[EDIT_CUSTOMER_DTO.ID]}`)
+                    .mountError()
+
+                /* in next lines, I decided that to change some information, the CPF must also match, but this cannot be changed by itself*/
+
+            } else if (
+                isRegisteredCustomer[EDIT_CUSTOMER_DTO.CPF] !== editCustomerDTO[EDIT_CUSTOMER_DTO.CPF]
+            ) {
+                throw new CustomError(
+                    406,
+                    'CPF inválido',
+                    1,
+                    `CPF informado não corresponde ao registrado`)
+                    .mountError()
+            }
+
+            editCustomerDTO[EDIT_CUSTOMER_DTO.MODIFY_AT] = moment(new Date())
+                .format("YYYY-MM-DD HH:mm:ss.SSSSSS")
+
+            const editCustomerInfo = await this.customerDatabase
+                .editCustomer(editCustomerDTO)
+
+            delete editCustomerDTO[EDIT_CUSTOMER_DTO.MODIFY_AT]
+
+            const newCustomerInfo: resultEditCustomerData = editCustomerDTO
+            delete newCustomerInfo[EDIT_CUSTOMER_DTO.CPF]
+
+            const result = requestResult
+                .toSuccessfullyEditCustomerRes(editCustomerDTO)
+
+            return result
+
+        } catch (error) {
+
+            //to do: error treatment
+            console.log(error)
+            throw error
+        }
+
     }
 
 

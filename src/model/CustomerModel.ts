@@ -8,7 +8,7 @@ export class requestResult {
 
     public [REQUEST_RESULT_KEYS.MESSAGE]: string
     public [REQUEST_RESULT_KEYS.ERROR]: number
-    public [REQUEST_RESULT_KEYS.DATA]: Array<salesData | null> | resultNewCustomerData
+    public [REQUEST_RESULT_KEYS.DATA]: Array<salesData | null> | resultNewCustomerData | resultEditCustomerData
 
     static toSuccessfullyOutput(data: (salesData | null)[]) {
         return {
@@ -26,8 +26,17 @@ export class requestResult {
         }
     }
 
+    static toSuccessfullyEditCustomerRes(data: resultEditCustomerData) {
+        return {
+            [REQUEST_RESULT_KEYS.MESSAGE]: "Cliente atualizado com sucesso",
+            [REQUEST_RESULT_KEYS.ERROR]: 0,
+            [REQUEST_RESULT_KEYS.DATA]: data
+        }
+    }
+
 }
 
+//salesByCustomer
 export enum RESULT_DATA_KEYS {
     JSON = 'AtributoJSON',
     NAME = 'cliente_nome',
@@ -60,7 +69,7 @@ export interface salesItens {
     [RESULT_DATA_ITEM_KEYS.QUANTITY]: number
 }
 
-
+//newCustomer
 export enum NEW_CUSTOMER_DTO {
     NAME = "nome",
     PHONE = "telefone",
@@ -75,7 +84,6 @@ export interface newCustomerDTO {
     [NEW_CUSTOMER_DTO.CREATE_AT]?: string
 }
 
-
 export enum RESULT_NEW_CUSTOMER {
     NAME = "nome",
     ID = "id"
@@ -84,4 +92,40 @@ export enum RESULT_NEW_CUSTOMER {
 export interface resultNewCustomerData {
     [RESULT_NEW_CUSTOMER.NAME]: string,
     [RESULT_NEW_CUSTOMER.ID]: number
+}
+
+
+//editCustomer
+export enum EDIT_CUSTOMER_DTO {
+    ID = "id",
+    NAME = "nome",
+    PHONE = "telefone",
+    CPF = "cpf",
+    MODIFY_AT = "data_alteração",
+}
+
+export interface editCustomerDTO {
+    [EDIT_CUSTOMER_DTO.ID]: number,
+    [EDIT_CUSTOMER_DTO.NAME]?: string,
+    [EDIT_CUSTOMER_DTO.PHONE]?: string,
+    [EDIT_CUSTOMER_DTO.CPF]: string,
+    [EDIT_CUSTOMER_DTO.MODIFY_AT]?: string
+}
+
+export enum RESULT_EDIT_CUSTOMER {
+    NAME = "nome",
+    ID = "id",
+    CPF = "cpf",
+    PHONE = "telefone",
+}
+
+export interface resultEditCustomerData {
+    [RESULT_EDIT_CUSTOMER.ID]: number
+    [RESULT_EDIT_CUSTOMER.NAME]?: string,
+    [RESULT_EDIT_CUSTOMER.CPF]?: string,
+    [RESULT_EDIT_CUSTOMER.PHONE]?: string
+}
+
+export enum CUSTOMER_URI_PARAMS {
+    ID = "cliente"
 }
