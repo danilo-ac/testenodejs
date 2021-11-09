@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node ./src/index.ts",
     "dev-start": "tsnd --transpile-only --ignore-watch node_modules ./src/index.ts",
-    "test-all": "clear && jest"
+    "test-all": "clear && jest --detectOpenHandles"
   },
   "repository": {
     "type": "git",
