@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import CustomerBusiness from "../business/CustomerBusiness";
 import SQLCustomerDatabase from "../data/SQLCustomerDatabase";
 import CustomError from "../error/CustomError";
-import { CUSTOMER_URI_PARAMS, editCustomerDTO, EDIT_CUSTOMER_DTO, newCustomerDTO, NEW_CUSTOMER_DTO, RESULT_EDIT_CUSTOMER } from "../model/CustomerModel";
+import { CUSTOMER_FILES_TYPE, CUSTOMER_URI_PARAMS, CUSTOMER_URI_QUERIES, editCustomerDTO, EDIT_CUSTOMER_DTO, newCustomerDTO, NEW_CUSTOMER_DTO, RESULT_EDIT_CUSTOMER } from "../model/CustomerModel";
 
 
 export class CustomerController {
@@ -18,10 +18,36 @@ export class CustomerController {
 
         //to do: input params validation 
 
+        const customerId = Number(req.params[CUSTOMER_URI_PARAMS.ID])
+
+        if (
+            req.query[CUSTOMER_URI_QUERIES.GENERATE_REPORT] &&
+            (Object.values(CUSTOMER_FILES_TYPE) as Array<any>)
+                .includes(req.query[CUSTOMER_URI_QUERIES.GENERATE_REPORT])
+        ) {
+
+            try {
+
+                const generateFile = await customerBusiness.getExcelReportByCustomerId(customerId)
+
+                return res
+                    .status(200)
+                    .send(generateFile)
+                    .end()
+
+            } catch (error: any) {
+                res
+                    .status(error.code || 500)
+                    .send(error.message || "Internal Error")
+                    .end()
+            }
+
+        }
+
         try {
 
             const salesByCustomerId = await customerBusiness
-                .getSalesByCustomerId(Number(req.params[CUSTOMER_URI_PARAMS.ID]))
+                .getSalesByCustomerId(customerId)
 
             return res
                 .status(200)

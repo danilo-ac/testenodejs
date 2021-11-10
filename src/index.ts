@@ -3,6 +3,7 @@ import express, { Request, Response } from 'express';
 import { AddressInfo } from 'net';
 import cors from 'cors'
 import { customerRoutes } from './routes/customerRoutes';
+import { filesRoutes } from './routes/filesRoutes';
 
 dotenv.config();
 
@@ -24,3 +25,4 @@ app.get("/", (req: Request, res: Response) => {
 })
 
 app.use("/cliente", customerRoutes)
+app.use("/arquivos", filesRoutes)

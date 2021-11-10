@@ -1,7 +1,10 @@
 import moment from 'moment';
 import CustomError from '../error/CustomError';
-import { editCustomerDTO, EDIT_CUSTOMER_DTO, newCustomerDTO, NEW_CUSTOMER_DTO, requestResult, resultEditCustomerData, resultNewCustomerData, RESULT_DATA_ITEM_KEYS, RESULT_DATA_KEYS, RESULT_NEW_CUSTOMER, salesData, salesItens } from '../model/CustomerModel';
+import { editCustomerDTO, EDIT_CUSTOMER_DTO, EXCEL_REPORT_COLUMNS, newCustomerDTO, NEW_CUSTOMER_DTO, requestResult, REQUEST_RESULT_KEYS, resultEditCustomerData, resultNewCustomerData, resultReportFileGeneration, RESULT_DATA_ITEM_KEYS, RESULT_DATA_KEYS, RESULT_NEW_CUSTOMER, RESULT_REPORT_FILE_GEN, salesData, salesItens } from '../model/CustomerModel';
 import CustomerRepository from './CustomerRepository';
+import xlsx from 'xlsx'
+import fs from 'fs'
+import path from 'path'
 
 export default class CustomerBusiness {
 
@@ -237,4 +240,65 @@ export default class CustomerBusiness {
     }
 
 
+    public async getExcelReportByCustomerId(customerId: number): Promise<requestResult> {
+
+        try {
+
+            const isRegisteredCustomer = this.customerDatabase.isRegisteredCustomerId(customerId)
+
+            if (!isRegisteredCustomer) {
+                throw new CustomError(401, 'Cliente não encontrado', 1, null).mountError()
+            }
+
+            const fullSalesReport: requestResult = await this.getSalesByCustomerId(customerId)
+
+            if (!fullSalesReport[REQUEST_RESULT_KEYS.DATA]) {
+                throw new CustomError(
+                    200,
+                    'Sem histórico para geração do relatório',
+                    1,
+                    "O cliente não possui histórico para a geração do relatório")
+                    .mountError()
+            }
+
+            const remodeledData = (fullSalesReport[REQUEST_RESULT_KEYS.DATA] as salesData[])
+                .map((item: salesData) => {
+                    return {
+                        [RESULT_DATA_KEYS.NAME]: item[RESULT_DATA_KEYS.NAME],
+                        [RESULT_DATA_KEYS.INVOICE_CODE]: item[RESULT_DATA_KEYS.INVOICE_CODE],
+                        [RESULT_DATA_KEYS.PURCHASE_DATE]: item[RESULT_DATA_KEYS.PURCHASE_DATE],
+                        [RESULT_DATA_KEYS.TOTAL_PURCHASE_VALUE]: item[RESULT_DATA_KEYS.TOTAL_PURCHASE_VALUE]
+                    }
+                })
+
+            const columnNames = [Object.values(EXCEL_REPORT_COLUMNS)]
+
+            const workSheet: xlsx.WorkSheet = xlsx.utils.json_to_sheet([])
+            xlsx.utils.sheet_add_aoa(workSheet, columnNames)
+            xlsx.utils.sheet_add_json(workSheet, remodeledData, { origin: 'A2', skipHeader: true })
+
+            const workBook: xlsx.WorkBook = xlsx.utils.book_new()
+            xlsx.utils.book_append_sheet(workBook, workSheet, `${moment(new Date()).format("YYYY-MM-DD")}`)
+
+            const fileName = `arquivo.xlsx`
+            const excelFile = xlsx.write(workBook, { type: 'buffer', bookType: 'xlsx', bookSST: false });
+            const newPathFile = path.resolve('src', 'assets', 'tmp', `${fileName}`)
+
+            fs.writeFileSync(newPathFile, excelFile);
+
+            const messageFilePath: resultReportFileGeneration = {
+                [RESULT_REPORT_FILE_GEN.URL]: `/arquivos/${fileName}`
+            }
+
+            const result: requestResult = requestResult.toSuccessfullyFileGenerate(messageFilePath)
+
+            return result
+
+        } catch (error) {
+
+            //to do: error treatment
+            console.log(error)
+            throw error
+        }
+    }
 }

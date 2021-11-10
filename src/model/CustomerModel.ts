@@ -1,5 +1,5 @@
 export enum REQUEST_RESULT_KEYS {
-    MESSAGE = 'menssagem',
+    MESSAGE = 'mensagem',
     ERROR = 'erro',
     DATA = 'dados'
 }
@@ -8,32 +8,31 @@ export class requestResult {
 
     public [REQUEST_RESULT_KEYS.MESSAGE]: string
     public [REQUEST_RESULT_KEYS.ERROR]: number
-    public [REQUEST_RESULT_KEYS.DATA]: Array<salesData | null> | resultNewCustomerData | resultEditCustomerData
+    public [REQUEST_RESULT_KEYS.DATA]: Array<salesData | null> | resultNewCustomerData | resultEditCustomerData | resultReportFileGeneration
 
-    static toSuccessfullyOutput(data: (salesData | null)[]) {
+    private static toSuccessfullyOutputModel(message: string, data: any) {
         return {
-            [REQUEST_RESULT_KEYS.MESSAGE]: "Vendas carregadas do cliente",
+            [REQUEST_RESULT_KEYS.MESSAGE]: message,
             [REQUEST_RESULT_KEYS.ERROR]: 0,
             [REQUEST_RESULT_KEYS.DATA]: data
         }
+    }
+
+    static toSuccessfullyOutput(data: (salesData | null)[]) {
+        return this.toSuccessfullyOutputModel('Vendas carregadas do cliente', data)
     }
 
     static toSuccessfullyNewCustomerRes(data: resultNewCustomerData) {
-        return {
-            [REQUEST_RESULT_KEYS.MESSAGE]: "Cliente inserido com sucesso",
-            [REQUEST_RESULT_KEYS.ERROR]: 0,
-            [REQUEST_RESULT_KEYS.DATA]: data
-        }
+        return this.toSuccessfullyOutputModel('Cliente inserido com sucesso', data)
     }
 
     static toSuccessfullyEditCustomerRes(data: resultEditCustomerData) {
-        return {
-            [REQUEST_RESULT_KEYS.MESSAGE]: "Cliente atualizado com sucesso",
-            [REQUEST_RESULT_KEYS.ERROR]: 0,
-            [REQUEST_RESULT_KEYS.DATA]: data
-        }
+        return this.toSuccessfullyOutputModel('Cliente atualizado com sucesso', data)
     }
 
+    static toSuccessfullyFileGenerate(data: resultReportFileGeneration) {
+        return this.toSuccessfullyOutputModel('Ok excel gerado ', data)
+    }
 }
 
 //salesByCustomer
@@ -71,10 +70,10 @@ export interface salesItens {
 
 //newCustomer
 export enum NEW_CUSTOMER_DTO {
-    NAME = "nome",
-    PHONE = "telefone",
-    CPF = "cpf",
-    CREATE_AT = "data_cadastro",
+    NAME = 'nome',
+    PHONE = 'telefone',
+    CPF = 'cpf',
+    CREATE_AT = 'data_cadastro',
 }
 
 export interface newCustomerDTO {
@@ -85,8 +84,8 @@ export interface newCustomerDTO {
 }
 
 export enum RESULT_NEW_CUSTOMER {
-    NAME = "nome",
-    ID = "id"
+    NAME = 'nome',
+    ID = 'id'
 }
 
 export interface resultNewCustomerData {
@@ -97,11 +96,11 @@ export interface resultNewCustomerData {
 
 //editCustomer
 export enum EDIT_CUSTOMER_DTO {
-    ID = "id",
-    NAME = "nome",
-    PHONE = "telefone",
-    CPF = "cpf",
-    MODIFY_AT = "data_alteração",
+    ID = 'id',
+    NAME = 'nome',
+    PHONE = 'telefone',
+    CPF = 'cpf',
+    MODIFY_AT = 'data_alteração',
 }
 
 export interface editCustomerDTO {
@@ -113,10 +112,10 @@ export interface editCustomerDTO {
 }
 
 export enum RESULT_EDIT_CUSTOMER {
-    NAME = "nome",
-    ID = "id",
-    CPF = "cpf",
-    PHONE = "telefone",
+    NAME = 'nome',
+    ID = 'id',
+    CPF = 'cpf',
+    PHONE = 'telefone',
 }
 
 export interface resultEditCustomerData {
@@ -127,5 +126,30 @@ export interface resultEditCustomerData {
 }
 
 export enum CUSTOMER_URI_PARAMS {
-    ID = "cliente"
+    ID = 'cliente'
+}
+
+//Report File Generation
+export enum CUSTOMER_URI_QUERIES {
+    GENERATE_REPORT = 'formato'
+}
+
+export enum CUSTOMER_FILES_TYPE {
+    EXCEL = 'excel',
+    PDF = 'pdf'
+}
+
+export enum EXCEL_REPORT_COLUMNS {
+    NAME = 'Cliente Nome',
+    INVOICE_CODE = 'Codigo Nota fiscal',
+    PURCHASE_DATE = 'Data Venda',
+    TOTAL_PURCHASE_VALUE = 'Valor Total'
+}
+
+export enum RESULT_REPORT_FILE_GEN {
+    URL = 'url'
+}
+
+export interface resultReportFileGeneration {
+    [RESULT_REPORT_FILE_GEN.URL]: string
 }
