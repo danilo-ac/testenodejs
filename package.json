@@ -6,7 +6,9 @@
   "scripts": {
     "start": "ts-node ./src/index.ts",
     "dev-start": "tsnd --transpile-only --ignore-watch node_modules ./src/index.ts",
-    "test-all": "clear && jest --detectOpenHandles ./src/tests/CustomerBusiness.*"
+    "test-all": "clear && jest --detectOpenHandles",
+    "test-business": "clear && jest --detectOpenHandles ./src/tests/CustomerBusiness.*",
+    "test-database": "clear && jest --detectOpenHandles ./src/tests/SQLCustomerDatabase.*"
   },
   "repository": {
     "type": "git",

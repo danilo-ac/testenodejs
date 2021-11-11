@@ -5,10 +5,16 @@
 ### Nota: entrega parcial para acompanhamento
 
 ### Tasks
-- [x] Task 1 - subir BD com docker e realizar uma consulta no BD
-- [x] Task 2 - descrever extensões VSCode
-- [x] Task 3 - consultar compras de um cliente por ID
-- [x] Task 4 - Parcial/ Cadastrar um novo cliente
+- [x] Task 01 - Misc | subir BD com docker e realizar uma consulta no BD
+- [x] Task 02 - Misc | descrever extensões VSCode
+- [x] Task 03 - API | consultar compras de um cliente por ID
+- [x] Task 04 - API | Parcial/ Cadastrar um novo cliente
+- [x] Task 05 - API | Atualizar cadastro de um cliente
+- [x] Task 06 - API | Gerar relatório excel das vendas de todos clientes
+- [x] Task 07 - API | Gerar relatório pdf das vendas de um cliente específico
+- [ ] Task 08 - Frontend | Realizar interface web para consumo da API
+- [x] Task 09 - API | Gerar
+- [ ] Task 10 - Revisão e procedimentos finais
 
 ### Instruções para iniciar projeto localmente
 via terminal, na pasta raiz do projeto:
@@ -17,6 +23,15 @@ via terminal, na pasta raiz do projeto:
 <code>npm run dev-start</code>
 
 `consumir com Rest API Client da sua prefêrencia`
+
+`criar e configurar .env na pasta raiz do projeto`
+~~~
+DB_USER = user-app
+DB_PASSWORD = senha-teste-app
+DB_HOST = 0.0.0.0
+DB_PORT = 3306
+DB_DATABASE_NAME = teste-app
+~~~
 
 [Documentação (em desenvolvimento)](https://documenter.getpostman.com/view/16227218/UVC3kTne)
 </br>

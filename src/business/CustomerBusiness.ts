@@ -1,6 +1,6 @@
 import moment from 'moment';
 import CustomError from '../error/CustomError';
-import { editCustomerDTO, EDIT_CUSTOMER_DTO, FILE_REPORT_COLUMNS, newCustomerDTO, NEW_CUSTOMER_DTO, requestResult, REQUEST_RESULT_KEYS, resultEditCustomerData, resultNewCustomerData, resultReportFileGeneration, RESULT_DATA_ITEM_KEYS, RESULT_DATA_KEYS, RESULT_NEW_CUSTOMER, RESULT_REPORT_FILE_GEN, salesData, salesItens } from '../model/CustomerModel';
+import { editCustomerDTO, EDIT_CUSTOMER_DTO, FILE_REPORT_COLUMNS, newCustomerDTO, NEW_CUSTOMER_DTO, requestResult, REQUEST_RESULT_KEYS, resultEditCustomerData, resultNewCustomerData, resultReportFileGeneration, resultSalesValidation, RESULT_DATA_ITEM_KEYS, RESULT_DATA_KEYS, RESULT_NEW_CUSTOMER, RESULT_REPORT_FILE_GEN, RESULT_SALES_VALIDATION, salesData, salesItens } from '../model/CustomerModel';
 import CustomerRepository from './CustomerRepository';
 import xlsx from 'xlsx'
 import fs from 'fs'
@@ -30,7 +30,7 @@ export default class CustomerBusiness {
                 throw new CustomError(401, 'Cliente não encontrado', 1, null).mountError()
             }
 
-            const invoices: Array<salesData | null> = !salesByCustomer ?
+            const invoices: salesData[] | null = !salesByCustomer ?
                 [] :
                 [...new Set(
                     salesByCustomer?.map((item: salesData & salesItens) => {
@@ -86,13 +86,16 @@ export default class CustomerBusiness {
     }
 
 
-    private isValidCPF(input: string) {
+    private isValidCPF(
+        input: string
+    ): boolean {
 
         const regex = /[0-9]{3}\.[0-9]{3}\.[0-9]{3}\-[0-9]{2}/;
 
         return regex.test(input);
 
     }
+
 
     public async postNewCustomer(
         newCustomerDTO: newCustomerDTO
@@ -142,11 +145,16 @@ export default class CustomerBusiness {
         }
     }
 
-    protected isValidBodyKeys(body: any, keysModel: any[]) {
+
+    protected isValidBodyKeys(
+        body: any,
+        keysModel: any[]
+    ): boolean {
         return Object.keys(body).every((item: any) => {
             return keysModel.includes(item)
         })
     }
+
 
     public async editCustomer(
         editCustomerDTO: editCustomerDTO
@@ -243,7 +251,9 @@ export default class CustomerBusiness {
     }
 
 
-    public async getExcelReportByCustomerId(customerId: number): Promise<requestResult> {
+    public async getExcelReportByCustomerId(
+        customerId: number
+    ): Promise<requestResult> {
 
         try {
 
@@ -376,7 +386,7 @@ export default class CustomerBusiness {
     }
 
 
-    public async getAllCustomersSales(): Promise<any> {
+    public async getAllCustomersSales(): Promise<requestResult> {
 
         try {
 
@@ -424,4 +434,58 @@ export default class CustomerBusiness {
     }
 
 
+    public async getSalesValidationByCustomerId(
+        customerId: number
+    ): Promise<requestResult> { // to do: set signuture to requestResult
+
+        //to do: id validation
+
+        try {
+
+            const isRegisteredCustomer = await this.customerDatabase
+                .isRegisteredCustomerId(customerId)
+
+            if (!isRegisteredCustomer) {
+                throw new CustomError(
+                    401,
+                    'Cliente não encontrado',
+                    1,
+                    `Cliente id não encontrado id: ${customerId}`)
+                    .mountError()
+            }
+
+            const customersOperations: resultSalesValidation[] = await this.customerDatabase
+                .getOperationCompareByCustomerId(customerId)
+
+            if (customersOperations.length === 0) {
+                throw new CustomError(
+                    200,
+                    'Validação de compras',
+                    0,
+                    [])
+                    .mountError()
+            }
+
+            const salesValidation: resultSalesValidation[] = []
+
+            for (let item of customersOperations) {
+                const isSameValue = item[RESULT_SALES_VALIDATION.PAID_VALUE] === item[RESULT_SALES_VALIDATION.TOTAL_PURCHASE_VALUE]
+                item[RESULT_SALES_VALIDATION.ERROR] = isSameValue ? 0 : 1
+                item[RESULT_SALES_VALIDATION.RESULT] = isSameValue ? 'Validado valores iguais' : 'Valores divergentes'
+                salesValidation.push(item)
+            }
+
+            const result: requestResult = requestResult
+                .toSuccessfullyOutputModel("Validação de compras ", salesValidation)
+
+            return result
+
+        } catch (error: any) {
+
+            //to do: error treatment
+            console.log(error)
+            throw error
+
+        }
+    }
 }

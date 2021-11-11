@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import CustomerBusiness from "../business/CustomerBusiness";
 import SQLCustomerDatabase from "../data/SQLCustomerDatabase";
 import CustomError from "../error/CustomError";
-import { CUSTOMER_FILES_TYPE, CUSTOMER_URI_PARAMS, CUSTOMER_URI_QUERIES, editCustomerDTO, EDIT_CUSTOMER_DTO, newCustomerDTO, NEW_CUSTOMER_DTO, RESULT_EDIT_CUSTOMER } from "../model/CustomerModel";
+import { CUSTOMER_FILES_TYPE, CUSTOMER_URI_PARAMS, CUSTOMER_URI_QUERIES, editCustomerDTO, EDIT_CUSTOMER_DTO, newCustomerDTO, NEW_CUSTOMER_DTO, requestResult, RESULT_EDIT_CUSTOMER } from "../model/CustomerModel";
 
 
 export class CustomerController {
@@ -168,7 +168,29 @@ export class CustomerController {
     }
 
 
+    public async getSalesValidationByCustomerId(
+        req: Request,
+        res: Response
+    ): Promise<any> {
 
+        const customerId = Number(req.params[CUSTOMER_URI_PARAMS.ID])
+        try {
+
+            const salesValidationByCustomerId: requestResult = await customerBusiness
+                .getSalesValidationByCustomerId(customerId)
+
+            return res
+                .status(200)
+                .send(salesValidationByCustomerId)
+                .end()
+
+        } catch (error: any) {
+            res
+                .status(error.code || 500)
+                .send(error.message || "Internal Error")
+                .end()
+        }
+    }
 
 }
 

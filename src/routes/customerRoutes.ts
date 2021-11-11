@@ -8,3 +8,4 @@ customerRoutes.get(`/:${[CUSTOMER_URI_PARAMS.ID]}/gerar-vendas`, customerControl
 customerRoutes.post('', customerController.postNewCustomer)
 customerRoutes.put(`/:${[CUSTOMER_URI_PARAMS.ID]}`, customerController.editCustomer)
 customerRoutes.get(`/todas-vendas-pdf`, customerController.getAllCustomersSales)
+customerRoutes.get(`/:${CUSTOMER_URI_PARAMS.ID}/validar-vendas`, customerController.getSalesValidationByCustomerId)

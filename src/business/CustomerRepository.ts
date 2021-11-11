@@ -1,4 +1,4 @@
-import { editCustomerDTO, newCustomerDTO, resultEditCustomerData, resultNewCustomerData, salesData, salesItens } from "../model/CustomerModel";
+import { editCustomerDTO, newCustomerDTO, resultEditCustomerData, resultNewCustomerData, resultSalesValidation, salesData, salesItens } from "../model/CustomerModel";
 
 export default interface CustomerRepository {
     getSalesByCustomerId(customerId: number): Promise<Array<salesData & salesItens>> | null
@@ -6,4 +6,5 @@ export default interface CustomerRepository {
     editCustomer(editCustomerrDTO: editCustomerDTO): Promise<resultEditCustomerData>
     isRegisteredCustomerId(customerId: number, getData?: "getData" | "dontGet"): Promise<any>
     getAllCustomersSales(): Promise<any>
+    getOperationCompareByCustomerId(customerId: number): Promise<resultSalesValidation[]>
 }

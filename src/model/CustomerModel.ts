@@ -8,14 +8,21 @@ export class requestResult {
 
     public [REQUEST_RESULT_KEYS.MESSAGE]: string
     public [REQUEST_RESULT_KEYS.ERROR]: number
-    public [REQUEST_RESULT_KEYS.DATA]: Array<salesData | null> | resultNewCustomerData | resultEditCustomerData | resultReportFileGeneration
+    public [REQUEST_RESULT_KEYS.DATA]: null |
+        salesData[] | salesData |
+        resultNewCustomerData |
+        resultEditCustomerData |
+        resultReportFileGeneration |
+        resultSalesValidation[] | resultSalesValidation
 
-    public static toSuccessfullyOutputModel(
+    static toSuccessfullyOutputModel(
         message: string,
-        data: (salesData | null)[] |
+        data: null |
+            salesData[] | salesData |
             resultNewCustomerData |
             resultEditCustomerData |
-            resultReportFileGeneration) {
+            resultReportFileGeneration |
+            resultSalesValidation[] | resultSalesValidation) {
         return {
             [REQUEST_RESULT_KEYS.MESSAGE]: message,
             [REQUEST_RESULT_KEYS.ERROR]: 0,
@@ -142,4 +149,22 @@ export enum RESULT_REPORT_FILE_GEN {
 
 export interface resultReportFileGeneration {
     [RESULT_REPORT_FILE_GEN.URL]: string
+}
+
+//Sales Validation
+export enum RESULT_SALES_VALIDATION {
+    ID = 'id',
+    ERROR = 'erro',
+    RESULT = 'resultado',
+    PAID_VALUE = 'valorPago',
+    TOTAL_PURCHASE_VALUE = 'valorTotalItens',
+}
+
+
+export interface resultSalesValidation {
+    [RESULT_SALES_VALIDATION.ID]: number,
+    [RESULT_SALES_VALIDATION.ERROR]?: number,
+    [RESULT_SALES_VALIDATION.RESULT]: string,
+    [RESULT_SALES_VALIDATION.PAID_VALUE]: number,
+    [RESULT_SALES_VALIDATION.TOTAL_PURCHASE_VALUE]: number,
 }

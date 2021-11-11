@@ -1,7 +1,6 @@
-import knex, { Knex } from 'knex';
 import CustomerRepository from '../business/CustomerRepository';
 import CustomError from '../error/CustomError';
-import { editCustomerDTO, EDIT_CUSTOMER_DTO, newCustomerDTO, RESULT_DATA_ITEM_KEYS, RESULT_DATA_KEYS, salesData, salesItens } from '../model/CustomerModel';
+import { editCustomerDTO, EDIT_CUSTOMER_DTO, newCustomerDTO, resultSalesValidation, RESULT_DATA_ITEM_KEYS, RESULT_DATA_KEYS, RESULT_SALES_VALIDATION, salesData, salesItens } from '../model/CustomerModel';
 import { SQL_TABLES, SQL_TABLE_CUSTOMER, SQL_TABLE_SALES, SQL_TABLE_SOLD_ITEMS } from '../model/SQLDatabaseModel';
 import { SQLBaseDatabase } from './SQLBaseDatabase';
 
@@ -12,26 +11,7 @@ export default class SQLCustomerDatabase extends SQLBaseDatabase implements Cust
         getData: "getData" | "dontGet" = "dontGet"
     ): Promise<any> {
 
-        if (getData === "getData") {
-            try {
-                const customerInfo = await this.getConnection()
-                    .from(SQL_TABLES.CUSTOMER)
-                    .where(`${SQL_TABLE_CUSTOMER.ID}`, customerId)
-                    .first()
-
-                if (!customerInfo) {
-                    return false
-                } else {
-                    return customerInfo
-                }
-
-            } catch (error) {
-                console.log(error)
-                throw new CustomError(500, "Internal Error", 1, "Something went wrong").mountError()
-            }
-        }
-
-        try {
+         try {
             const checkCustomer = await this.getConnection()
                 .from(SQL_TABLES.CUSTOMER)
                 .where(`${SQL_TABLE_CUSTOMER.ID}`, customerId)
@@ -40,7 +20,7 @@ export default class SQLCustomerDatabase extends SQLBaseDatabase implements Cust
             if (!checkCustomer) {
                 return false
             } else {
-                return true
+                return getData === "getData" ? checkCustomer : true
             }
 
         } catch (error) {
@@ -166,4 +146,40 @@ export default class SQLCustomerDatabase extends SQLBaseDatabase implements Cust
         }
 
     }
+
+
+    public async getOperationCompareByCustomerId(
+        customerId: number
+    ): Promise<resultSalesValidation[]> {
+
+        if (customerId) { //Note: to avoid SQL Injection once below code is a raw query
+            if (isNaN(customerId)) {
+                throw new CustomError(406, "Not acceptable query", 1, "ID must be only number")
+            }
+        }
+
+        try {
+
+            const query: resultSalesValidation[] = await this.getConnection()
+                .raw(
+                    `SELECT ${SQL_TABLE_SALES.ID} as ${RESULT_SALES_VALIDATION.ID},
+                    SUM(${SQL_TABLE_SOLD_ITEMS.UNITY_VALUE}*${SQL_TABLE_SOLD_ITEMS.QUANTITY}) as ${RESULT_SALES_VALIDATION.TOTAL_PURCHASE_VALUE},
+                    ${SQL_TABLE_SALES.VALUE_PAID} as ${RESULT_SALES_VALIDATION.PAID_VALUE}
+                    FROM ${SQL_TABLES.SALES}
+                    LEFT JOIN ${SQL_TABLES.SOLD_ITEMS}
+                        ON ${SQL_TABLE_SOLD_ITEMS.SALE_ID}=${SQL_TABLE_SALES.ID}
+                            WHERE ${SQL_TABLE_SALES.CUSTOMER_ID} = ${customerId}
+                    GROUP BY ${SQL_TABLE_SALES.ID};`
+                )
+                .then(res => res[0])
+
+            return query
+
+        } catch (error: any) {
+            console.log(error)
+            throw new CustomError(500, "Internal Error", 1, "Something went wrong").mountError()
+
+        }
+    }
+
 }

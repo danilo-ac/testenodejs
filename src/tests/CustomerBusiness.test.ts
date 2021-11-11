@@ -12,7 +12,7 @@ describe("Tests for Excel File Gen", () => {
 
         const result = await testCustomerBusiness.getExcelReportByCustomerId(validID)
 
-        expect(result).toEqual({ "dados": { "url": "/arquivos/arquivo.xlsx" }, "erro": 0, "mensagem": "Ok excel gerado " })
+        expect(result).toEqual({ "dados": { "url": "/arquivos/arquivo.xlsx" }, "erro": 0, "mensagem": "Ok excel gerado" })
 
     })
 
@@ -45,9 +45,24 @@ describe("Tests for Endpoint All Sales with PDF File Gen", () => {
 
         const result = await testCustomerBusiness.getAllCustomersSales()
 
-        console.log(result)
-
         expect(result).toEqual({ "dados": { "url": "/arquivos/arquivo.pdf" }, "erro": 0, "mensagem": "Ok pdf gerado " })
+
+    })
+
+})
+
+
+describe("getOperationCompareByCustomerId", () => {
+
+    test("Success", async () => {
+
+        const validID = 1
+        const realCustomerDatabase = new SQLCustomerDatabase()
+        const testCustomerBusiness = new CustomerBusiness(realCustomerDatabase)
+
+        const result = await testCustomerBusiness.getSalesValidationByCustomerId(validID)
+
+        expect(result).toBeDefined()
 
     })
 

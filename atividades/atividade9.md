@@ -1,6 +1,6 @@
 # Atividade 9
 
-- [ ] Fazer uma api de validação, /cliente/1/validar-vendas Curl para /cliente/1/gerar-vendas (Atividade 3) capturando o retorno em formato json, tratando os itens das vendas verificando se o valor total de somando os itens(venda_itens.valor * venda_itens.quantidade) é igual ao venda.valor_pago  retornando o json semlhante ao a baixo de todas as vendas do cliente. 
+- [x] Fazer uma api de validação, /cliente/1/validar-vendas Curl para /cliente/1/gerar-vendas (Atividade 3) capturando o retorno em formato json, tratando os itens das vendas verificando se o valor total de somando os itens(venda_itens.valor * venda_itens.quantidade) é igual ao venda.valor_pago  retornando o json semlhante ao a baixo de todas as vendas do cliente. 
 
 
 ```
@@ -23,7 +23,7 @@
 }
 ```
 
-- [ ] Caso enviar um cliente inexistente 
+- [x] Caso enviar um cliente inexistente 
 
 ```
 {
@@ -37,8 +37,8 @@
 
 (Evidências no evidencia.doc)
 
-- [ ] - Retorno da consulta referente aos cliente id: 1 e 2
-- [ ] - Retorno do exception de cliente não encontrado
+- [x] - Retorno da consulta referente aos cliente id: 1 e 2
+- [x] - Retorno do exception de cliente não encontrado
 
 ---
 
