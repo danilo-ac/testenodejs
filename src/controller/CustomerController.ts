@@ -31,7 +31,7 @@ export class CustomerController {
                 const generateFile = await customerBusiness.getExcelReportByCustomerId(customerId)
 
                 return res
-                    .status(200)
+                    .status(201)
                     .send(generateFile)
                     .end()
 
@@ -61,7 +61,6 @@ export class CustomerController {
                 .end()
         }
     }
-
 
 
     public async postNewCustomer(
@@ -146,6 +145,28 @@ export class CustomerController {
                 .end()
         }
     }
+
+
+    public async getAllCustomersSales(
+        req: Request, res: Response
+    ): Promise<any> {
+        try {
+
+            const generateFile = await customerBusiness.getAllCustomersSales()
+
+            return res
+                .status(201)
+                .send(generateFile)
+                .end()
+
+        } catch (error: any) {
+            res
+                .status(error.code || 500)
+                .send(error.message || "Internal Error")
+                .end()
+        }
+    }
+
 
 
 

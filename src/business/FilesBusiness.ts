@@ -8,4 +8,13 @@ export default class FilesBusiness {
 
         return excelFilePath
     }
+
+    public downloadPdfFile() {
+
+        const pdfFilePath = path.resolve('src', 'assets', 'tmp', 'arquivo.pdf')
+
+        return pdfFilePath
+    }
+
+
 }

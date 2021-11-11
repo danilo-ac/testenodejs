@@ -19,7 +19,7 @@ describe("Tests for SQL queries", () => {
         const result = await testCustomerDB.isRegisteredCustomerId(991)
 
         expect(result).toBe(false)
-        
+
     })
 
 
@@ -30,6 +30,14 @@ describe("Tests for SQL queries", () => {
 
         expect(result.id).toBe(true)
 
+    })
+
+    test("Return report of all customer sales", async () => {
+
+        const realTestCustomerDB = new SQLCustomerDatabase()
+        const result = await realTestCustomerDB.getAllCustomersSales()
+
+        expect(result).toBeDefined()
     })
 
 })

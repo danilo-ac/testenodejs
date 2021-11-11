@@ -25,10 +25,29 @@ describe("Tests for Excel File Gen", () => {
         const testCustomerBusiness = new CustomerBusiness(realCustomerDatabase)
 
         try {
-            const result = await testCustomerBusiness.getExcelReportByCustomerId(validID)
+            await testCustomerBusiness.getExcelReportByCustomerId(validID)
         } catch (error: any) {
             expect(error.message[REQUEST_RESULT_KEYS.MESSAGE]).toEqual('Cliente não encontrado')
         }
+
+    })
+
+})
+
+
+describe("Tests for Endpoint All Sales with PDF File Gen", () => {
+
+    test("Success to generate PDF File", async () => {
+
+        const validID = 1
+        const realCustomerDatabase = new SQLCustomerDatabase()
+        const testCustomerBusiness = new CustomerBusiness(realCustomerDatabase)
+
+        const result = await testCustomerBusiness.getAllCustomersSales()
+
+        console.log(result)
+
+        expect(result).toEqual({ "dados": { "url": "/arquivos/arquivo.pdf" }, "erro": 0, "mensagem": "Ok pdf gerado " })
 
     })
 

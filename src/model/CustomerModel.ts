@@ -10,7 +10,12 @@ export class requestResult {
     public [REQUEST_RESULT_KEYS.ERROR]: number
     public [REQUEST_RESULT_KEYS.DATA]: Array<salesData | null> | resultNewCustomerData | resultEditCustomerData | resultReportFileGeneration
 
-    private static toSuccessfullyOutputModel(message: string, data: any) {
+    public static toSuccessfullyOutputModel(
+        message: string,
+        data: (salesData | null)[] |
+            resultNewCustomerData |
+            resultEditCustomerData |
+            resultReportFileGeneration) {
         return {
             [REQUEST_RESULT_KEYS.MESSAGE]: message,
             [REQUEST_RESULT_KEYS.ERROR]: 0,
@@ -18,21 +23,6 @@ export class requestResult {
         }
     }
 
-    static toSuccessfullyOutput(data: (salesData | null)[]) {
-        return this.toSuccessfullyOutputModel('Vendas carregadas do cliente', data)
-    }
-
-    static toSuccessfullyNewCustomerRes(data: resultNewCustomerData) {
-        return this.toSuccessfullyOutputModel('Cliente inserido com sucesso', data)
-    }
-
-    static toSuccessfullyEditCustomerRes(data: resultEditCustomerData) {
-        return this.toSuccessfullyOutputModel('Cliente atualizado com sucesso', data)
-    }
-
-    static toSuccessfullyFileGenerate(data: resultReportFileGeneration) {
-        return this.toSuccessfullyOutputModel('Ok excel gerado ', data)
-    }
 }
 
 //salesByCustomer
@@ -139,7 +129,7 @@ export enum CUSTOMER_FILES_TYPE {
     PDF = 'pdf'
 }
 
-export enum EXCEL_REPORT_COLUMNS {
+export enum FILE_REPORT_COLUMNS {
     NAME = 'Cliente Nome',
     INVOICE_CODE = 'Codigo Nota fiscal',
     PURCHASE_DATE = 'Data Venda',

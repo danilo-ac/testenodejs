@@ -5,4 +5,5 @@ export default interface CustomerRepository {
     postNewCustomer(newCustomerDTO: newCustomerDTO): Promise<resultNewCustomerData>
     editCustomer(editCustomerrDTO: editCustomerDTO): Promise<resultEditCustomerData>
     isRegisteredCustomerId(customerId: number, getData?: "getData" | "dontGet"): Promise<any>
+    getAllCustomersSales(): Promise<any>
 }

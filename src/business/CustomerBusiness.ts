@@ -1,10 +1,12 @@
 import moment from 'moment';
 import CustomError from '../error/CustomError';
-import { editCustomerDTO, EDIT_CUSTOMER_DTO, EXCEL_REPORT_COLUMNS, newCustomerDTO, NEW_CUSTOMER_DTO, requestResult, REQUEST_RESULT_KEYS, resultEditCustomerData, resultNewCustomerData, resultReportFileGeneration, RESULT_DATA_ITEM_KEYS, RESULT_DATA_KEYS, RESULT_NEW_CUSTOMER, RESULT_REPORT_FILE_GEN, salesData, salesItens } from '../model/CustomerModel';
+import { editCustomerDTO, EDIT_CUSTOMER_DTO, FILE_REPORT_COLUMNS, newCustomerDTO, NEW_CUSTOMER_DTO, requestResult, REQUEST_RESULT_KEYS, resultEditCustomerData, resultNewCustomerData, resultReportFileGeneration, RESULT_DATA_ITEM_KEYS, RESULT_DATA_KEYS, RESULT_NEW_CUSTOMER, RESULT_REPORT_FILE_GEN, salesData, salesItens } from '../model/CustomerModel';
 import CustomerRepository from './CustomerRepository';
 import xlsx from 'xlsx'
 import fs from 'fs'
 import path from 'path'
+import { TableCell, TDocumentDefinitions, TFontDictionary } from 'pdfmake/interfaces';
+import PdfPrinter from 'pdfmake';
 
 export default class CustomerBusiness {
 
@@ -70,7 +72,7 @@ export default class CustomerBusiness {
                         return mountData
                     })
 
-            const result: requestResult = requestResult.toSuccessfullyOutput(invoices)
+            const result: requestResult = requestResult.toSuccessfullyOutputModel('Vendas carregadas do cliente', invoices)
 
             return result
 
@@ -127,7 +129,8 @@ export default class CustomerBusiness {
                 [RESULT_NEW_CUSTOMER.NAME]: newCustomerDTO[NEW_CUSTOMER_DTO.NAME]
             }
 
-            const result: requestResult = requestResult.toSuccessfullyNewCustomerRes(newCustomerInfo)
+            const result: requestResult = requestResult
+                .toSuccessfullyOutputModel('Cliente inserido com sucesso', newCustomerInfo)
 
             return result
 
@@ -226,7 +229,7 @@ export default class CustomerBusiness {
             delete newCustomerInfo[EDIT_CUSTOMER_DTO.CPF]
 
             const result = requestResult
-                .toSuccessfullyEditCustomerRes(editCustomerDTO)
+                .toSuccessfullyOutputModel('Cliente atualizado com sucesso', editCustomerDTO)
 
             return result
 
@@ -271,10 +274,10 @@ export default class CustomerBusiness {
                     }
                 })
 
-            const columnNames = [Object.values(EXCEL_REPORT_COLUMNS)]
+            const columnsNames = [Object.values(FILE_REPORT_COLUMNS)]
 
             const workSheet: xlsx.WorkSheet = xlsx.utils.json_to_sheet([])
-            xlsx.utils.sheet_add_aoa(workSheet, columnNames)
+            xlsx.utils.sheet_add_aoa(workSheet, columnsNames)
             xlsx.utils.sheet_add_json(workSheet, remodeledData, { origin: 'A2', skipHeader: true })
 
             const workBook: xlsx.WorkBook = xlsx.utils.book_new()
@@ -290,7 +293,8 @@ export default class CustomerBusiness {
                 [RESULT_REPORT_FILE_GEN.URL]: `/arquivos/${fileName}`
             }
 
-            const result: requestResult = requestResult.toSuccessfullyFileGenerate(messageFilePath)
+            const result: requestResult = requestResult
+                .toSuccessfullyOutputModel('Ok excel gerado', messageFilePath)
 
             return result
 
@@ -301,4 +305,123 @@ export default class CustomerBusiness {
             throw error
         }
     }
+
+
+    private async generatePDFTableFile(
+        docTitle: string,
+        columnsNames: Array<string>,
+        rowsValues: Array<Array<any>>
+    ) {
+
+        const fileName = "arquivo.pdf"
+
+        const fonts: TFontDictionary = {
+            Helvetica: {
+                normal: 'Helvetica',
+                bold: 'Helvetica-Bold',
+                italics: 'Helvetica-Oblique',
+                bolditalics: 'Helvetica-BoldOblique'
+            }
+        }
+
+        const printer = new PdfPrinter(fonts)
+
+        const tableBody: TableCell[][] = []
+
+        const columnsTitle: TableCell[] = []
+        for (let item of columnsNames) {
+            columnsTitle.push({ text: item, style: 'columnsTitle' })
+        }
+        tableBody.push(columnsTitle)
+
+        for (let item of rowsValues) {
+            tableBody.push(item)
+        }
+
+
+        const docDefinitions: TDocumentDefinitions = {
+            defaultStyle: { font: "Helvetica" },
+            content: [
+                {
+                    text: docTitle,
+                    fontSize: 14,
+                    bold: true,
+                    margin: [0, 20, 0, 8]
+                }, {
+                    table: {
+                        headerRows: 1,
+                        body: tableBody
+                    }
+                }],
+            styles: {
+                columnsTitle: {
+                    fontSize: 12,
+                    bold: true,
+                    fillColor: '#292929',
+                    color: '#FFFFFF',
+                    margin: 2
+                }
+            }
+
+        }
+
+        const pdfDoc = printer.createPdfKitDocument(docDefinitions)
+
+        const newPathFile = path.resolve('src', 'assets', 'tmp', `${fileName}`)
+
+        pdfDoc.pipe(fs.createWriteStream(newPathFile))
+        pdfDoc.end()
+
+        return newPathFile
+    }
+
+
+    public async getAllCustomersSales(): Promise<any> {
+
+        try {
+
+            const databaseResult = await this.customerDatabase.getAllCustomersSales()
+
+            if (!databaseResult) {
+                throw new CustomError(
+                    200,
+                    'Relatório não gerado',
+                    1,
+                    'A consulta retornou vazia'
+                )
+            }
+
+
+            const rowsValues: string[][] = []
+
+            const columnsNames: string[] = Object.values(FILE_REPORT_COLUMNS)
+
+
+            for (let item of databaseResult) {
+                rowsValues.push(Object.values(item))
+            }
+
+
+            const docTitle = `Teste Node - ${moment(new Date).locale('pt-br').format('DD/MMM/YYYY',)}`
+
+
+            await this.generatePDFTableFile(docTitle, columnsNames, rowsValues)
+
+            const messageFilePath: resultReportFileGeneration = {
+                [RESULT_REPORT_FILE_GEN.URL]: `/arquivos/arquivo.pdf`
+            }
+
+            const result: requestResult = requestResult
+                .toSuccessfullyOutputModel('Ok pdf gerado ', messageFilePath)
+
+            return result
+
+        } catch (error) {
+            //to do: error treatment
+            console.log(error)
+            throw error
+        }
+    }
+
+
 }

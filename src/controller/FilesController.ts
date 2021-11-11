@@ -1,5 +1,6 @@
 import FilesBusiness from "../business/FilesBusiness";
 import { Request, Response } from "express";
+import { FILE_URI_PARAMS } from "../model/FileModel";
 
 
 export class FilesController {
@@ -9,25 +10,45 @@ export class FilesController {
     ) { }
 
 
-    public async downloadExcelFile(req: Request, res: Response): Promise<any> {
+    public async downloadFile(req: Request, res: Response): Promise<any> {
 
-        try {
+        if (req.params[FILE_URI_PARAMS.FILE_NAME] === "arquivo.xlsx") {
 
-            const filePath = filesBusiness.downloadExcelFile()
+            try {
 
-            res
-                .status(200)
-                .set({ 'Content-Disposition': `attachment; filename=arquivo.xlsx`, 'Content-Type': 'xlsx' })
-                .download(filePath)
+                const filePath = filesBusiness.downloadExcelFile()
 
-        } catch (error: any) {
-            res
-                .status(error.code || 500)
-                .send(error.message || "Internal Error")
-                .end()
+                res
+                    .status(200)
+                    .download(filePath)
+
+            } catch (error: any) {
+                res
+                    .status(error.code || 500)
+                    .send(error.message || "Internal Error")
+                    .end()
+            }
+        }
+
+
+        if (req.params[FILE_URI_PARAMS.FILE_NAME] === "arquivo.pdf") {
+
+            try {
+
+                const filePath = filesBusiness.downloadPdfFile()
+
+                res
+                    .status(200)
+                    .download(filePath)
+
+            } catch (error: any) {
+                res
+                    .status(error.code || 500)
+                    .send(error.message || "Internal Error")
+                    .end()
+            }
         }
     }
-
 
 }
 
