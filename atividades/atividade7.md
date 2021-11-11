@@ -20,8 +20,8 @@ Ai ao executar a rota https://localhost:7081/arquivos/arquivo.pdf ele retorna o 
 
 (Evidências no evidencia.doc)
 
-- [ ] - Retorno json da criação do pdf
-- [ ] - Print do pdf gerado aberto
+- [x] - Retorno json da criação do pdf
+- [x] - Print do pdf gerado aberto
 
 ---
 

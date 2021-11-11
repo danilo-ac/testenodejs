@@ -1,0 +1,46 @@
+{
+  "name": "testenodejs",
+  "version": "1.0.0",
+  "description": "Olá caro desenvolvedor, nesse teste analisaremos seu conhecimento geral e inclusive velocidade de desenvolvimento. Abaixo explicaremos tudo o que será necessário.",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node ./src/index.ts",
+    "dev-start": "tsnd --transpile-only --ignore-watch node_modules ./src/index.ts",
+    "test-all": "clear && jest --detectOpenHandles",
+    "test-business": "clear && jest --detectOpenHandles ./src/tests/CustomerBusiness.*",
+    "test-database": "clear && jest --detectOpenHandles ./src/tests/SQLCustomerDatabase.*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danilo-ac/testenodejs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danilo-ac/testenodejs/issues"
+  },
+  "homepage": "https://github.com/danilo-ac/testenodejs#readme",
+  "dependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.0.2",
+    "@types/knex": "^0.16.1",
+    "@types/moment": "^2.13.0",
+    "@types/pdfmake": "^0.1.19",
+    "@types/xlsx": "^0.0.36",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jest": "^27.3.1",
+    "knex": "^0.95.11",
+    "moment": "^2.29.1",
+    "mysql": "^2.18.1",
+    "pdfmake": "^0.2.3",
+    "ts-jest": "^27.0.7",
+    "ts-node": "^10.4.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.4.4",
+    "xlsx": "^0.17.3"
+  }
+}

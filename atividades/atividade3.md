@@ -1,6 +1,6 @@
 # Atividade 3
 
-- [ ] Fazer a rota get /cliente/${cliente}/gerar-vendas
+- [x] Fazer a rota get /cliente/${cliente}/gerar-vendas
 
 Deve retornar um json com os dados da venda do `cliente id=1`.
 
@@ -60,7 +60,7 @@ Representação gráfica
 @endjson
 ```
 **Atenção**
-- [ ] Caso o ID não for encontrado deve voltar um error conforme abaixo:
+- [x] Caso o ID não for encontrado deve voltar um error conforme abaixo:
 
 ```
 {
@@ -72,8 +72,8 @@ Representação gráfica
 
 (Evidências no evidencia.doc)
 
-- [ ] - Consulta retornando o json
-- [ ] - Exception consultando o cliente id: 991
+- [x] - Consulta retornando o json
+- [x] - Exception consultando o cliente id: 991
 
 ---
 
