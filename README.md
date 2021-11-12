@@ -2,8 +2,6 @@
 
 ### Danilo Anthony Chagas
 
-### Nota: entrega parcial para acompanhamento
-
 ### Tasks
 - [x] Task 01 - Misc | subir BD com docker e realizar uma consulta no BD
 - [x] Task 02 - Misc | descrever extensões VSCode
@@ -14,28 +12,34 @@
 - [x] Task 07 - API | Gerar relatório pdf das vendas de um cliente específico
 - [x] Task 08 - Frontend | Realizar interface web para consumo da API
 - [x] Task 09 - API | Gerar
-- [ ] Task 10 - Revisão e procedimentos finais
+- [x] Task 10 - Revisão e procedimentos finais
 
 ### Instruções para iniciar projeto localmente
 via terminal, na pasta raiz do projeto:
-<code>npm install</code>
 <code>sudo docker-compose up -d</code>
-<code>npm run dev-start</code>
 
-`consumir com Rest API Client da sua prefêrencia`
+#### portas
+- API:   3003
+- App:   3000/cliente/cadastro
+- DB:    3306
 
-`criar e configurar .env na pasta raiz do projeto`
-~~~
-DB_USER = user-app
-DB_PASSWORD = senha-teste-app
-DB_HOST = 0.0.0.0
-DB_PORT = 3306
-DB_DATABASE_NAME = teste-app
-~~~
-
-[Documentação (em desenvolvimento)](https://documenter.getpostman.com/view/16227218/UVC3kTne)
-</br>
+***consumir com Rest API Client da sua prefêrencia***</br>
+***contudo disponibilizei a documentação e a coleção no Postman para pronta utilização:***</br>
+[Documentação](https://documenter.getpostman.com/view/16227218/UVC3kTne)
+</br></br>
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/16227218-55c0675a-661a-4cda-aabb-b8dbb4740c1e?action=collection%2Ffork&collection-url=entityId%3D16227218-55c0675a-661a-4cda-aabb-b8dbb4740c1e%26entityType%3Dcollection%26workspaceId%3D68ac0672-2bf2-40f8-a03e-c77bc6f362eb)
+
+### pontos para melhorias e demais notas
+- validação dos paramns e body request para evitar valores que não servem ou podem quebrar aplicação;
+    - tenho um estudo inicial [aqui](https://github.com/future4code/Danilo-Chagas/blob/834f5ceb4af16bf4871acabc440f05e9eabf1e71/semana18/projeto_BackEnd_LabeCommerce/src/endpoint/validation/validationCreateUser.ts) onde venho desde então aprimorando uma função de múltipla validação, para ser mais reutilizável, rápida adaptação e manutenção, onde a manipulação seria somente em **expectedObject**, **checkers** e **expectedValues**, sendo que na linhas 63 em diante haveria uma operação mais automatizada, e ao fim traria mais informações ao front em caso de inconformidade com as requisições, evitando tentantivas demasiadas e visando uma economia de processamento em sentido mais amplo; 
+- Geração do arquivo xlsx e pdf podem ser aprimorados, assim como o código pode ser otimizado para atendar demandas mútiplas. Além disso, é possívl aprimorar o endpoint para gerar um link único e com o nome do arquivo mais condizente (evitando fazer um download de arquivo antigo ou equivocado)
+    - pensei em combinar bcrypt com jwtoken para gerar um link hasheado, e este conteria a informação criptografada do nome do arquivo e validade de acesso, assim o endpoint de download poderia saber exatamente qual é o arquivo certo para entregar ao usuário;
+- o endpoint de edição de um cliente deliberei que o campo do cpf seria somente para condição de edição, mas não para alteração em si.
+- repositório de business e retornos da camada de database podem ser aprimorados para melhor atender business;
+- mensagens de erros podem ser concentradas em modelo/repositorio para facilitar a manuntenção e desenvolvimento
+- tentei aplicar amplamente os tipos visando rápida manutenção no código em caso de alteção dos nomes das propriedades para que objetos que compartilhem referências em comum sejam automaticamente atualizados;
+- busquei seguir ao máximo o template de resultados em json indicados nos enunciados
+- é a primeira vez que estou usando o docker de fato, então provavelmente as configurações não são das melhores, mas funciona!
 
 <details>
 <summary>Enunciado do Projeto</summary>
