@@ -12,7 +12,7 @@
 - [x] Task 05 - API | Atualizar cadastro de um cliente
 - [x] Task 06 - API | Gerar relatório excel das vendas de todos clientes
 - [x] Task 07 - API | Gerar relatório pdf das vendas de um cliente específico
-- [ ] Task 08 - Frontend | Realizar interface web para consumo da API
+- [x] Task 08 - Frontend | Realizar interface web para consumo da API
 - [x] Task 09 - API | Gerar
 - [ ] Task 10 - Revisão e procedimentos finais
 
