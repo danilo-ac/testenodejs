@@ -1,4 +1,4 @@
-version: "2.3"
+version: "3"
 networks:
   default:
     driver: bridge
@@ -16,3 +16,32 @@ services:
       - MYSQL_DATABASE=teste-app
       - MYSQL_USER=user-app
       - MYSQL_PASSWORD=senha-teste-app
+  
+      
+  datapage-api:
+    build: ./datapage-api/
+    command: npm run dev-start
+    env_file: ./datapage-api/.env
+    restart: always 
+    ports:
+      - "3003:3003"
+    volumes:
+      - ./datapage-api/:/usr/api
+    depends_on:
+      - mysql
+
+
+  datapage-ui:
+    build: ./datapage-ui/
+    command: npm run start
+    env_file: ./datapage-ui/.env
+    stdin_open: true
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./datapage-ui/:/usr/react
+      - ./datapage-ui/node_modules
+    environment:
+          - NODE_ENV=development
+    depends_on:
+      - datapage-api
